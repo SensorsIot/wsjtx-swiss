@@ -226,6 +226,7 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
   character*38 c
   character*36 a2
   integer hashmy10,hashmy12,hashmy22,hashdx10,hashdx12,hashdx22
+  character*2 ccanton(26)
   logical unpk28_success,unpk77_success,unpkg4_success
   logical dxcall13_set,mycall13_set
 
@@ -264,6 +265,10 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
   data mycall13_set/.false./
   data mycall13_0/''/
   data dxcall13_0/''/
+  data ccanton/                                                            &
+       "AG","AI","AR","BE","BL","BS","FR","GE","GL","GR",                   &
+       "JU","LU","NE","NW","OW","SG","SH","SO",                             &
+       "SZ","TG","TI","UR","VD","VS","ZG","ZH"/
 
   save hashmy10,hashmy12,hashmy22,hashdx10,hashdx12,hashdx22
 
@@ -460,11 +465,6 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
   
   else if(i3.eq.0 .and. n3.eq.7) then
 ! 0.7   HB9BLA HB9XYZ ZH            28 28 15    71   Swiss FT8 Contest
-     character*2 ccanton(26)
-     data ccanton/                                                         &
-          "AG","AI","AR","BE","BL","BS","FR","GE","GL","GR",                &
-          "JU","LU","NE","NW","OW","SG","SH","SO",                          &
-          "SZ","TG","TI","UR","VD","VS","ZG","ZH"/
 
      read(c77,1070) n28a,n28b,ipayload
 1070 format(2b28,b15)
