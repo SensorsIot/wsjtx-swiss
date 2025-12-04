@@ -88,7 +88,7 @@ jobs:
     - name: Build WSJT-X
       run: |
         cd wsjtx/build
-        cmake --build . --config Release
+        cmake --build . --config Release --parallel 4
 
     - name: Install WSJT-X
       run: |
