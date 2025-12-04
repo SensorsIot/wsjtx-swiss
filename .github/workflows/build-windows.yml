@@ -147,24 +147,18 @@ jobs:
           cp -r /c/wsjtx-install/share /c/wsjtx-swiss/ || true
 
           # Create qt.conf in lib/ to tell Qt where plugins are
-          cat > /c/wsjtx-swiss/lib/qt.conf << 'QTCONF'
-[Paths]
-Plugins = .
-QTCONF
+          echo '[Paths]' > /c/wsjtx-swiss/lib/qt.conf
+          echo 'Plugins = .' >> /c/wsjtx-swiss/lib/qt.conf
 
           # Create launcher batch file at top level
-          cat > /c/wsjtx-swiss/wsjtx-swiss.cmd << 'LAUNCHER'
-@echo off
-cd /d "%~dp0lib"
-start "" "wsjtx-swiss.exe" %*
-LAUNCHER
+          echo '@echo off' > /c/wsjtx-swiss/wsjtx-swiss.cmd
+          echo 'cd /d "%~dp0lib"' >> /c/wsjtx-swiss/wsjtx-swiss.cmd
+          echo 'start "" "wsjtx-swiss.exe" %*' >> /c/wsjtx-swiss/wsjtx-swiss.cmd
 
           # Create launcher for message_aggregator
-          cat > /c/wsjtx-swiss/message_aggregator.cmd << 'LAUNCHER'
-@echo off
-cd /d "%~dp0lib"
-start "" "message_aggregator.exe" %*
-LAUNCHER
+          echo '@echo off' > /c/wsjtx-swiss/message_aggregator.cmd
+          echo 'cd /d "%~dp0lib"' >> /c/wsjtx-swiss/message_aggregator.cmd
+          echo 'start "" "message_aggregator.exe" %*' >> /c/wsjtx-swiss/message_aggregator.cmd
 
           echo "=== Top level (user sees this) ==="
           ls -la /c/wsjtx-swiss/
