@@ -123,6 +123,34 @@ jobs:
           echo "=== Final DLL count in bin ==="
           ls -la *.dll | wc -l
 
+      - name: Restructure for flat layout
+        run: |
+          echo "=== Creating flat directory structure ==="
+          mkdir -p /c/wsjtx-swiss
+
+          # Move bin contents to top level and rename main executable
+          cd /c/wsjtx-install/bin
+          cp wsjtx.exe /c/wsjtx-swiss/wsjtx-swiss.exe
+          cp message_aggregator.exe /c/wsjtx-swiss/ || true
+          cp *.dll /c/wsjtx-swiss/
+
+          # Move Qt plugins folders
+          cp -r plugins /c/wsjtx-swiss/ || true
+          cp -r platforms /c/wsjtx-swiss/ || true
+          cp -r imageformats /c/wsjtx-swiss/ || true
+          cp -r styles /c/wsjtx-swiss/ || true
+          cp -r audio /c/wsjtx-swiss/ || true
+          cp -r mediaservice /c/wsjtx-swiss/ || true
+
+          # Move share folder (contains data files)
+          cp -r /c/wsjtx-install/share /c/wsjtx-swiss/ || true
+
+          echo "=== Final structure ==="
+          ls -la /c/wsjtx-swiss/
+
+          echo "=== Subfolders ==="
+          find /c/wsjtx-swiss -maxdepth 1 -type d
+
       - name: Create NSIS installer
         run: |
           cd wsjtx/build
@@ -138,7 +166,7 @@ jobs:
       - name: Upload portable zip
         shell: pwsh
         run: |
-          Compress-Archive -Path C:\wsjtx-install\* -DestinationPath C:\wsjtx-swiss-portable.zip
+          Compress-Archive -Path C:\wsjtx-swiss\* -DestinationPath C:\wsjtx-swiss-portable.zip
 
       - name: Upload portable artifact
         uses: actions/upload-artifact@v4
