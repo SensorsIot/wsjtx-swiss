@@ -42,6 +42,13 @@ jobs:
           mingw-w64-x86_64-qt5-tools
           mingw-w64-x86_64-boost
           mingw-w64-x86_64-portaudio
+    - name: List Boost libraries
+      run: |
+        echo "=== Boost libraries available ==="
+        ls -la /mingw64/lib/libboost* | head -30
+        echo "=== Boost log libraries ==="
+        ls -la /mingw64/lib/libboost_log* || echo "No boost_log found"
+
     - name: Download prebuilt Hamlib
       shell: pwsh
       run: |
