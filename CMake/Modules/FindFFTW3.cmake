@@ -64,14 +64,20 @@ foreach (_comp ${_components})
   endif (_comp STREQUAL "single")
 endforeach (_comp ${_components})
 
-# If using threads, we need to link against threaded libraries as well - except on Windows.
-if (NOT WIN32 AND _use_threads)
+# If using threads, we need to link against threaded libraries as well.
+# On MinGW/MSYS2, the library might be named _omp instead of _threads
+if (_use_threads)
   set (_thread_libs)
   foreach (_lib ${_libraries})
-    list (APPEND _thread_libs ${_lib}_threads)
+    if (MINGW)
+      # Try both _omp (OpenMP) and _threads naming conventions
+      list (APPEND _thread_libs ${_lib}_omp ${_lib}_threads)
+    else ()
+      list (APPEND _thread_libs ${_lib}_threads)
+    endif ()
   endforeach (_lib ${_libraries})
   set (_libraries ${_thread_libs} ${_libraries})
-endif (NOT WIN32 AND _use_threads)
+endif (_use_threads)
 
 # Keep a list of variable names that we need to pass on to
 # find_package_handle_standard_args().
@@ -83,8 +89,14 @@ foreach (_lib ${_libraries})
   find_library (${_LIB}_LIBRARY NAMES ${_lib} ${_lib}-3
     HINTS ${FFTW3_ROOT_DIR} PATH_SUFFIXES lib)
   mark_as_advanced (${_LIB}_LIBRARY)
-  list (APPEND FFTW3_LIBRARIES ${${_LIB}_LIBRARY})
-  list (APPEND _check_list ${_LIB}_LIBRARY)
+  # Only add to libraries list if found (allows optional thread libs)
+  if (${_LIB}_LIBRARY)
+    list (APPEND FFTW3_LIBRARIES ${${_LIB}_LIBRARY})
+  endif ()
+  # Only require non-thread libraries in the check list
+  if (NOT ${_lib} MATCHES "_threads$" AND NOT ${_lib} MATCHES "_omp$")
+    list (APPEND _check_list ${_LIB}_LIBRARY)
+  endif ()
 endforeach (_lib ${_libraries})
 
 # Search for the header file.
