@@ -42,6 +42,7 @@ jobs:
             mingw-w64-x86_64-qt5-tools
             mingw-w64-x86_64-boost
             mingw-w64-x86_64-portaudio
+            mingw-w64-x86_64-nsis
 
       - name: Download prebuilt Hamlib
         shell: pwsh
@@ -122,9 +123,26 @@ jobs:
           echo "=== Final DLL count in bin ==="
           ls -la *.dll | wc -l
 
-      - name: Upload WSJT-X artifact
+      - name: Create NSIS installer
+        run: |
+          cd wsjtx/build
+          cpack -G NSIS
+
+      - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: wsjtx-windows-build
-          path: C:\wsjtx-install\
-          retention-days: 5
+          name: wsjtx-swiss-installer
+          path: wsjtx/build/wsjtx-*.exe
+          retention-days: 30
+
+      - name: Upload portable zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path C:\wsjtx-install\* -DestinationPath C:\wsjtx-swiss-portable.zip
+
+      - name: Upload portable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wsjtx-swiss-portable
+          path: C:\wsjtx-swiss-portable.zip
+          retention-days: 30
