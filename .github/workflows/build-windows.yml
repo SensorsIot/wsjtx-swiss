@@ -1,0 +1,102 @@
+name: Build WSJT-X on Windows
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+    - name: Checkout WSJT-X repository
+      uses: actions/checkout@v4
+      with:
+        path: wsjtx
+
+    - name: Setup MSYS2 and dependencies
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          git
+          make
+          mingw-w64-x86_64-cmake
+          pkg-config
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-gcc-fortran
+          mingw-w64-x86_64-libusb
+          mingw-w64-x86_64-fftw
+          mingw-w64-x86_64-omp
+          mingw-w64-x86_64-qt5
+          mingw-w64-x86_64-qt5-multimedia
+          mingw-w64-x86_64-qt5-serialport
+          mingw-w64-x86_64-qt5-tools
+          mingw-w64-x86_64-boost
+          mingw-w64-x86_64-portaudio
+    - name: Download prebuilt Hamlib
+      shell: pwsh
+      run: |
+        # Download from our own GitHub release
+        curl -L -o hamlib.zip "https://github.com/SensorsIot/wsjtx/releases/download/hamlib-4.5.5/hamlib-mingw64-4.5.5.zip"
+        Expand-Archive -Path "hamlib.zip" -DestinationPath "C:\hamlib-prefix"
+        Get-ChildItem -Path "C:\hamlib-prefix" -Recurse | Select-Object FullName
+    - name: Install OmniRig
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri "https://www.dxatlas.com/OmniRig/Files/OmniRig.zip" -OutFile "OmniRig.zip"
+        Expand-Archive -Path "OmniRig.zip" -DestinationPath "."
+        Start-Process -FilePath "OmniRigSetup.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART" -Wait
+    - name: Install OmniRig INI files
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri "http://dxatlas.com/OmniRig/Files/RigIni.zip" -OutFile "RigIni.zip"
+        Expand-Archive -Path "RigIni.zip" -DestinationPath "OmniRigIni"
+        $omniRigRigsPath = "C:\Program Files (x86)\Afreet\OmniRig\Rigs"
+        if (-not (Test-Path $omniRigRigsPath)) {
+            New-Item -Path $omniRigRigsPath -ItemType Directory -Force
+        }
+        Copy-Item -Path "OmniRigIni\*.ini" -Destination $omniRigRigsPath -Force
+    - name: Configure WSJT-X
+      run: |
+        cd wsjtx
+        mkdir -p build
+        cd build
+        export HAMLIB_PREFIX="/c/hamlib-prefix"
+        cmake -G "MinGW Makefiles" \
+              -D CMAKE_BUILD_TYPE=Release \
+              -D CMAKE_PREFIX_PATH="${HAMLIB_PREFIX}" \
+              -D Hamlib_INCLUDE_DIR="${HAMLIB_PREFIX}/include" \
+              -D Hamlib_LIBRARY="${HAMLIB_PREFIX}/lib/libhamlib.dll.a" \
+              -D hamlib_STATIC=0 \
+              -D CMAKE_Fortran_FLAGS="-fallow-argument-mismatch" \
+              -DWSJT_SKIP_MANPAGES=ON \
+              -DWSJT_GENERATE_DOCS=OFF \
+              -D CMAKE_INSTALL_PREFIX="/c/wsjtx-install" \
+              ..
+    - name: Build WSJT-X
+      run: |
+        cd wsjtx/build
+        cmake --build . --config Release
+    - name: Install WSJT-X
+      run: |
+        cd wsjtx/build
+        cmake --build . --target install --config Release
+    - name: Zip WSJT-X build
+      shell: pwsh
+      run: |
+        Compress-Archive -Path C:\wsjtx-install\* -DestinationPath C:\wsjtx-windows-build.zip
+    - name: Upload WSJT-X artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: wsjtx-windows-build
+        path: C:\wsjtx-windows-build.zip
+        retention-days: 5
