@@ -3430,6 +3430,162 @@ Right click for insert and delete options.</string>
             </item>
            </layout>
           </item>
+          <item row="6" column="0">
+           <widget class="QRadioButton" name="rbSwiss_FT8_Contest">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>18</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swiss FT8 Contest mode - exchange canton codes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Swiss FT8 Contest</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">special_op_activity_button_group</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QComboBox" name="cbSwiss_My_Canton">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select your Swiss canton.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>AG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AI</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>AR</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>BE</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>BL</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>BS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>FR</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GE</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GL</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GR</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>JU</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>LU</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>NE</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>NW</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>OW</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>SG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>SH</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>SO</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>SZ</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>TG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>TI</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>UR</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>VD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>VS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ZG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ZH</string>
+             </property>
+            </item>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

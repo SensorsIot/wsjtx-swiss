@@ -171,6 +171,14 @@ QByteArray LogBook::QSOToADIF (QString const& hisCall, QString const& hisGrid, Q
               {
                 t += " <state:" + QString::number (words.at (1).size ()) + ">" + words.at (1);
               }
+            else if (Configuration::SpecialOperatingActivity::SWISS_FT8_CONTEST == config_->special_op_id ())
+              {
+                t += " <MY_CANTON:" + QString::number (xSent.size ()) + ">" + xSent;
+                if (words.size () >= 1 && words.at(0).size() == 2)
+                  {
+                    t += " <HIS_CANTON:" + QString::number (words.at(0).size ()) + ">" + words.at(0);
+                  }
+              }
           }
       }
   }

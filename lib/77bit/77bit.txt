@@ -16,7 +16,7 @@ i3.n3 Example message                    Bits           Total  Purpose
 0.4   WA9XYZ KA1ABC R 32A EMA            28 28 1 4 3 7    71   ARRL Field Day
 0.5   123456789ABCDEF012                 71               71   Telemetry (18 hex)
 0.6   Temporarily hijacked in packjt77 for WSPR-LF.  This is not necessary!
-0.7   ... tbd
+0.7   HB9BLA HB9XYZ ZH                   28 28 15              71   Swiss FT8 Contest
 
 1     WA9XYZ/R KA1ABC/R R FN42           28 1 28 1 1 15   74   Standard msg
 2     PA3XYZ/P GM4ABC/P R JO22           28 1 28 1 1 15   74   EU VHF contest

@@ -80,5 +80,5 @@ QString version (bool include_patch)
 QString program_title (QString const& revision)
 {
   QString id {QCoreApplication::applicationName () + "   v" + QCoreApplication::applicationVersion ()};
-  return id + " " + revision + "  by K1JT et al.";
+  return id + " " + revision + "  by K1JT et al. and HB9BLA";
 }

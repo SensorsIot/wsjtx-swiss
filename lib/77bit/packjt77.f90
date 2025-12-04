@@ -150,6 +150,10 @@ subroutine pack77(msg0,i3,n3,c77)
 ! Check 0.3 and 0.4 (ARRL Field Day exchange)
   call pack77_03(nwords,w,i3,n3,c77)
   if(i3.ge.0) go to 900
+
+! Check 0.7 (Swiss FT8 Contest)
+  call pack77_07(nwords,w,i3,n3,c77)
+  if(i3.ge.0) go to 900
   if(nwords.ge.2) go to 100
 
   ! Check 0.5 (telemetry)
@@ -454,7 +458,32 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
         msg=trim(call_1)//' '//grid6
      endif
   
-  else if(i3.eq.0 .and. n3.gt.6) then
+  else if(i3.eq.0 .and. n3.eq.7) then
+! 0.7   HB9BLA HB9XYZ ZH            28 28 15    71   Swiss FT8 Contest
+     character*2 ccanton(26)
+     data ccanton/                                                         &
+          "AG","AI","AR","BE","BL","BS","FR","GE","GL","GR",                &
+          "JU","LU","NE","NW","OW","SG","SH","SO",                          &
+          "SZ","TG","TI","UR","VD","VS","ZG","ZH"/
+
+     read(c77,1070) n28a,n28b,ipayload
+1070 format(2b28,b15)
+     icanton = iand(ipayload, 31)
+     if(icanton.lt.0 .or. icanton.gt.25) then
+        unpk77_success=.false.
+        return
+     endif
+     call unpack28(n28a,call_1,unpk28_success)
+     if(.not.unpk28_success) unpk77_success=.false.
+     call unpack28(n28b,call_2,unpk28_success)
+     if(.not.unpk28_success) unpk77_success=.false.
+     msg=trim(call_1)//' '//trim(call_2)//' '//ccanton(icanton+1)
+     if (unpk77_success) then
+        call save_hash_call(call_1,n10,n12,n22)
+        call save_hash_call(call_2,n10,n12,n22)
+     endif
+
+  else if(i3.eq.0 .and. n3.gt.7) then
      unpk77_success=.false.
    
   else if(i3.eq.1 .or. i3.eq.2) then
@@ -1110,6 +1139,55 @@ subroutine pack77_06(nwords,w,i3,n3,c77,i3_hint,n3_hint)
 
 900 return  
 end subroutine pack77_06
+
+
+subroutine pack77_07(nwords,w,i3,n3,c77)
+
+! Pack a Type 0.7 message: Swiss FT8 Contest mode
+! Example message: HB9BLA HB9XYZ ZH       28 28 15    71
+
+  parameter (NCANTON=26)
+  character*13 w(19)
+  character*77 c77
+  character*6 bcall_1,bcall_2
+  character*2 ccanton(NCANTON)
+  logical ok1,ok2
+  data ccanton/                                                         &
+       "AG","AI","AR","BE","BL","BS","FR","GE","GL","GR",                &
+       "JU","LU","NE","NW","OW","SG","SH","SO",                          &
+       "SZ","TG","TI","UR","VD","VS","ZG","ZH"/
+
+  i3=-1
+  n3=-1
+  if(nwords.ne.3) return
+  call chkcall(w(1),bcall_1,ok1)
+  call chkcall(w(2),bcall_2,ok2)
+  if(.not.ok1 .or. .not.ok2) return
+
+  icanton=-1
+  do i=1,NCANTON
+     if(ccanton(i).eq.w(3)(1:2)) then
+        icanton=i-1
+        exit
+     endif
+  enddo
+  if(icanton.eq.-1) return
+
+! 0.7   HB9BLA HB9XYZ ZH            28 28 15    71   Swiss FT8 Contest
+
+  i3=0
+  n3=7
+  call pack28(w(1),n28a)
+  call pack28(w(2),n28b)
+
+  ipayload = icanton
+
+  write(c77,1010) n28a,n28b,ipayload,n3,i3
+1010 format(2b28.28,b15.15,2b3.3)
+
+  return
+end subroutine pack77_07
+
 
 
 subroutine pack77_1(nwords,w,i3,n3,c77)
