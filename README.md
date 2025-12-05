@@ -170,7 +170,13 @@ Artifacts are retained for 30 days.
 
 ---
 
-## 8. Credits & License
+## 8. Hamlib Builds
+
+Pre-built Hamlib libraries used for compiling WSJT-SWISS are available in a separate repository: [hamlib-prebuilds](https://github.com/SensorsIot/hamlib-prebuilds). These are for developers only and not needed for regular users.
+
+---
+
+## 9. Credits & License
 
 ### Credits
 

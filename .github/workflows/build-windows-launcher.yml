@@ -1,4 +1,4 @@
-name: Build WSJT-X on Windows
+name: Build WSJT-X with Launcher Installer
 
 on:
   workflow_dispatch:
@@ -126,84 +126,119 @@ jobs:
           gcc -mwindows -O2 -o wsjtx-swiss.exe wsjtx-swiss-launcher.c
           ls -la wsjtx-swiss.exe
 
-      - name: Create portable package
+      - name: Create launcher directory structure
         run: |
-          echo "=== Creating directory structure ==="
-          mkdir -p /c/wsjtx-swiss/lib
+          echo "=== Creating directory structure for NSIS ==="
+          mkdir -p /c/wsjtx-launcher/lib
 
           cd /c/wsjtx-install/bin
 
           # DLLs and Qt plugins in lib/ subfolder
-          cp *.dll /c/wsjtx-swiss/lib/
-          cp -r plugins /c/wsjtx-swiss/lib/ || true
-          cp -r platforms /c/wsjtx-swiss/lib/ || true
-          cp -r imageformats /c/wsjtx-swiss/lib/ || true
-          cp -r styles /c/wsjtx-swiss/lib/ || true
-          cp -r audio /c/wsjtx-swiss/lib/ || true
-          cp -r mediaservice /c/wsjtx-swiss/lib/ || true
+          cp *.dll /c/wsjtx-launcher/lib/
+          cp -r plugins /c/wsjtx-launcher/lib/ || true
+          cp -r platforms /c/wsjtx-launcher/lib/ || true
+          cp -r imageformats /c/wsjtx-launcher/lib/ || true
+          cp -r styles /c/wsjtx-launcher/lib/ || true
+          cp -r audio /c/wsjtx-launcher/lib/ || true
+          cp -r mediaservice /c/wsjtx-launcher/lib/ || true
 
           # Main executables in lib/
-          cp wsjtx.exe /c/wsjtx-swiss/lib/
-          cp message_aggregator.exe /c/wsjtx-swiss/lib/ || true
+          cp wsjtx.exe /c/wsjtx-launcher/lib/
+          cp message_aggregator.exe /c/wsjtx-launcher/lib/ || true
 
           # Share folder (contains data files)
-          cp -r /c/wsjtx-install/share /c/wsjtx-swiss/ || true
+          cp -r /c/wsjtx-install/share /c/wsjtx-launcher/ || true
 
           # Create qt.conf in lib/ to tell Qt where plugins are
-          echo '[Paths]' > /c/wsjtx-swiss/lib/qt.conf
-          echo 'Plugins = .' >> /c/wsjtx-swiss/lib/qt.conf
+          echo '[Paths]' > /c/wsjtx-launcher/lib/qt.conf
+          echo 'Plugins = .' >> /c/wsjtx-launcher/lib/qt.conf
 
           # Copy launcher to top level
-          cp $GITHUB_WORKSPACE/wsjtx/launcher/wsjtx-swiss.exe /c/wsjtx-swiss/
+          cp $GITHUB_WORKSPACE/wsjtx/launcher/wsjtx-swiss.exe /c/wsjtx-launcher/
 
           echo "=== Top level (user sees this) ==="
-          ls -la /c/wsjtx-swiss/
+          ls -la /c/wsjtx-launcher/
 
           echo "=== lib/ contents ==="
-          ls -la /c/wsjtx-swiss/lib/
+          ls -la /c/wsjtx-launcher/lib/
 
-      - name: Create NSIS installer
+      - name: Create custom NSIS installer
         run: |
-          cd wsjtx/build
-          cpack -G NSIS
+          # Create NSIS script for launcher structure
+          cat > /c/installer.nsi << 'NSIS_EOF'
+          !include "MUI2.nsh"
 
-      - name: Upload installer
+          Name "WSJT-SWISS"
+          OutFile "C:\wsjtx-swiss-launcher-installer.exe"
+          InstallDir "C:\WSJTX-SWISS"
+          RequestExecutionLevel admin
+
+          !insertmacro MUI_PAGE_WELCOME
+          !insertmacro MUI_PAGE_DIRECTORY
+          !insertmacro MUI_PAGE_INSTFILES
+          !insertmacro MUI_PAGE_FINISH
+
+          !insertmacro MUI_UNPAGE_CONFIRM
+          !insertmacro MUI_UNPAGE_INSTFILES
+
+          !insertmacro MUI_LANGUAGE "English"
+
+          Section "Install"
+            SetOutPath "$INSTDIR"
+
+            ; Copy launcher to top level
+            File "C:\wsjtx-launcher\wsjtx-swiss.exe"
+
+            ; Copy lib folder
+            SetOutPath "$INSTDIR\lib"
+            File /r "C:\wsjtx-launcher\lib\*.*"
+
+            ; Copy share folder
+            SetOutPath "$INSTDIR\share"
+            File /r "C:\wsjtx-launcher\share\*.*"
+
+            ; Create Start Menu shortcuts
+            CreateDirectory "$SMPROGRAMS\WSJT-SWISS"
+            CreateShortcut "$SMPROGRAMS\WSJT-SWISS\WSJT-SWISS.lnk" "$INSTDIR\wsjtx-swiss.exe"
+            CreateShortcut "$SMPROGRAMS\WSJT-SWISS\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+
+            ; Create Desktop shortcut
+            CreateShortcut "$DESKTOP\WSJT-SWISS.lnk" "$INSTDIR\wsjtx-swiss.exe"
+
+            ; Create uninstaller
+            WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+            ; Add to Add/Remove Programs
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WSJT-SWISS" "DisplayName" "WSJT-SWISS"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WSJT-SWISS" "UninstallString" "$INSTDIR\Uninstall.exe"
+            WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WSJT-SWISS" "InstallLocation" "$INSTDIR"
+          SectionEnd
+
+          Section "Uninstall"
+            ; Remove files
+            RMDir /r "$INSTDIR\lib"
+            RMDir /r "$INSTDIR\share"
+            Delete "$INSTDIR\wsjtx-swiss.exe"
+            Delete "$INSTDIR\Uninstall.exe"
+            RMDir "$INSTDIR"
+
+            ; Remove shortcuts
+            Delete "$SMPROGRAMS\WSJT-SWISS\WSJT-SWISS.lnk"
+            Delete "$SMPROGRAMS\WSJT-SWISS\Uninstall.lnk"
+            RMDir "$SMPROGRAMS\WSJT-SWISS"
+            Delete "$DESKTOP\WSJT-SWISS.lnk"
+
+            ; Remove registry
+            DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\WSJT-SWISS"
+          SectionEnd
+          NSIS_EOF
+
+          # Run NSIS (available via MSYS2)
+          makensis /c/installer.nsi
+
+      - name: Upload launcher installer
         uses: actions/upload-artifact@v4
         with:
-          name: wsjtx-swiss-installer
-          path: wsjtx/build/wsjtx-*.exe
+          name: wsjtx-swiss-launcher-installer
+          path: C:\wsjtx-swiss-launcher-installer.exe
           retention-days: 30
-
-      - name: Upload portable zip
-        shell: pwsh
-        run: |
-          Compress-Archive -Path C:\wsjtx-swiss\* -DestinationPath C:\wsjtx-swiss-portable.zip
-
-      - name: Upload portable artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: wsjtx-swiss-portable
-          path: C:\wsjtx-swiss-portable.zip
-          retention-days: 30
-
-      - name: Upload to Release
-        if: startsWith(github.ref, 'refs/tags/')
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          cd wsjtx
-          # Only upload if a release exists for this tag
-          $releaseExists = gh release view ${{ github.ref_name }} 2>$null
-          if ($releaseExists) {
-            # Find the installer exe
-            $installer = Get-ChildItem -Path build -Filter "wsjtx-*.exe" | Select-Object -First 1
-            if ($installer) {
-              gh release upload ${{ github.ref_name }} $installer.FullName --clobber
-            }
-            # Upload portable zip
-            gh release upload ${{ github.ref_name }} C:\wsjtx-swiss-portable.zip --clobber
-          } else {
-            Write-Host "No release exists for ${{ github.ref_name }} - skipping upload (artifacts still available)"
-          }
-          exit 0
