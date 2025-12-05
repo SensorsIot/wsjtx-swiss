@@ -45,7 +45,7 @@ jobs:
         shell: pwsh
         run: |
           # Download files sequentially (parallel jobs unreliable in CI)
-          curl -L -o C:\hamlib.zip "https://github.com/SensorsIot/wsjtx/releases/download/hamlib-4.6.5/hamlib-mingw64-4.6.5.zip"
+          curl -L -o C:\hamlib.zip "https://github.com/SensorsIot/hamlib-prebuilds/releases/download/hamlib-4.6.5/hamlib-mingw64-4.6.5.zip"
           Invoke-WebRequest -Uri "https://www.dxatlas.com/OmniRig/Files/OmniRig.zip" -OutFile "C:\OmniRig.zip"
           Invoke-WebRequest -Uri "http://dxatlas.com/OmniRig/Files/RigIni.zip" -OutFile "C:\RigIni.zip"
 
