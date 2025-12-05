@@ -8,7 +8,8 @@
  */
 
 #include <windows.h>
-#include <stdlib.h>
+#include <stdio.h>
+#include <wchar.h>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow) {
