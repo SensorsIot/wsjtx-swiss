@@ -55,8 +55,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     if (!CreateProcessW(NULL, cmdLine, NULL, NULL, FALSE, 0, NULL, libPath, &si, &pi)) {
-        MessageBoxW(NULL, L"Failed to start WSJT-SWISS.\n\nMake sure wsjtx.exe exists in the lib subfolder.",
-                    L"WSJT-SWISS Launcher", MB_ICONERROR);
+        WCHAR errorMsg[MAX_PATH * 4];
+        DWORD error = GetLastError();
+        swprintf(errorMsg, MAX_PATH * 4,
+                 L"Failed to start WSJT-SWISS.\n\n"
+                 L"Looking for: %s\n\n"
+                 L"Lib path: %s\n\n"
+                 L"Error code: %lu",
+                 wsjtxPath, libPath, error);
+        MessageBoxW(NULL, errorMsg, L"WSJT-SWISS Launcher", MB_ICONERROR);
         return 1;
     }
 
