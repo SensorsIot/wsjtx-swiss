@@ -5374,7 +5374,7 @@ void MainWindow::guiUpdate()
           if(m_ntx==3) m_xSent=ui->tx3->text().right(13);
         }
 
-        if(SpecOp::FIELD_DAY==m_specOp or SpecOp::RTTY==m_specOp) {
+        if(SpecOp::FIELD_DAY==m_specOp or SpecOp::RTTY==m_specOp or SpecOp::SWISS_FT8_CONTEST==m_specOp) {
           if(m_ntx==2 or m_ntx==3) {
             QStringList t=ui->tx2->text().split(' ', SkipEmptyParts);
             int n=t.size();
@@ -5553,7 +5553,8 @@ void MainWindow::guiUpdate()
         SpecOp::RTTY==m_specOp or
         SpecOp::WW_DIGI==m_specOp or
         SpecOp::ARRL_DIGI==m_specOp or
-        SpecOp::Q65_PILEUP==m_specOp)) {
+        SpecOp::Q65_PILEUP==m_specOp or
+        SpecOp::SWISS_FT8_CONTEST==m_specOp)) {
       //We're in a contest-like mode other than EU_VHF: start QSO with Tx2.
       ui->tx1->setEnabled(false);
       ui->txb1->setEnabled(false);
@@ -6207,7 +6208,7 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
       m_xRcvd=t.at(n-2) + " " + t.at(n-1);
       t0=t.at(n-3);
     }
-    if(bFieldDay_msg and SpecOp::FIELD_DAY!=m_specOp) {
+    if(bFieldDay_msg and SpecOp::FIELD_DAY!=m_specOp and SpecOp::SWISS_FT8_CONTEST!=m_specOp) {
       // ### Should be in ARRL Field Day mode ??? ###
       MessageBox::information_message (this, tr ("Should you switch to ARRL Field Day mode?"));
     }
@@ -6218,7 +6219,7 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
     }
 
     // This is necessary to prevent crashes caused by double-clicking messages with <...> in certain QSO situations.
-    if((SpecOp::EU_VHF==m_specOp or SpecOp::RTTY==m_specOp or SpecOp::FIELD_DAY==m_specOp)
+    if((SpecOp::EU_VHF==m_specOp or SpecOp::RTTY==m_specOp or SpecOp::FIELD_DAY==m_specOp or SpecOp::SWISS_FT8_CONTEST==m_specOp)
         and message.string().contains("<...>")) return;
 
     if(SpecOp::EU_VHF==m_specOp and message_words.at(2).contains(m_baseCall) and
@@ -6269,7 +6270,7 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
           m_QSOProgress=ROGER_REPORT;
         }
         m_xRcvd=t[n-2] + " " + t[n-1];
-      } else if(SpecOp::FIELD_DAY==m_specOp and bFieldDay_msg) {
+      } else if((SpecOp::FIELD_DAY==m_specOp or SpecOp::SWISS_FT8_CONTEST==m_specOp) and bFieldDay_msg) {
         if(t0=="R") {
           setTxMsg(4);
           m_QSOProgress=ROGERS;
@@ -6277,6 +6278,7 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
           setTxMsg(3);
           m_QSOProgress=ROGER_REPORT;
         }
+        m_xRcvd=t[n-2] + " " + t[n-1];
       } else {  // no grid on end of msg
         auto const& word_3 = message_words.at (4);
         auto word_3_as_number = word_3.toInt ();
@@ -6372,7 +6374,8 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
               {
                 if(SpecOp::EU_VHF==m_specOp or
                    SpecOp::FIELD_DAY==m_specOp or
-                   SpecOp::RTTY==m_specOp)
+                   SpecOp::RTTY==m_specOp or
+                   SpecOp::SWISS_FT8_CONTEST==m_specOp)
                   {
                     setTxMsg(2);
                     m_QSOProgress=REPORT;
@@ -6610,6 +6613,7 @@ void MainWindow::genCQMsg ()
       if(SpecOp::RTTY == m_specOp)      m_cqStr="RU";
       if(SpecOp::WW_DIGI == m_specOp)   m_cqStr="WW";
       if(SpecOp::ARRL_DIGI == m_specOp) m_cqStr="TEST";
+      if(SpecOp::SWISS_FT8_CONTEST == m_specOp) m_cqStr="XMAS";
       }
       if( tlist.at(1)==my_callsign ) {
          t="CQ " + m_cqStr + " " + tlist.at(1) + " " + tlist.at(2); 
@@ -7292,6 +7296,7 @@ void MainWindow::on_logQSOButton_clicked()                 //Log QSO button
         ui->dxGridEntry->setText(grid);
         break;
       case SpecOp::FIELD_DAY:
+      case SpecOp::SWISS_FT8_CONTEST:
         m_rptSent=m_xSent.split(" ").at(0);
         m_rptRcvd=m_xRcvd.split(" ").at(0);
         break;
@@ -7762,6 +7767,7 @@ void MainWindow::on_actionFT8_triggered()
     if(SpecOp::WW_DIGI==m_specOp) t0="WW Digi";
     if(SpecOp::ARRL_DIGI==m_specOp) t0="ARRL Digi";
     if(SpecOp::Q65_PILEUP==m_specOp) t0="Q65 Pileup";
+    if(SpecOp::SWISS_FT8_CONTEST==m_specOp) t0="Swiss FT8";
     if(t0=="") {
       ui->labDXped->setVisible(false);
     } else {
@@ -8039,6 +8045,7 @@ void MainWindow::on_actionQ65_triggered()
     if(SpecOp::WW_DIGI==m_specOp) t0="WW Digi";
     if(SpecOp::ARRL_DIGI==m_specOp) t0="ARRL Digi";
     if(SpecOp::Q65_PILEUP==m_specOp) t0="Q65 Pileup";
+    if(SpecOp::SWISS_FT8_CONTEST==m_specOp) t0="Swiss FT8";
     if(t0=="") {
       ui->labDXped->setVisible(false);
     } else {
@@ -11476,6 +11483,7 @@ void MainWindow::chkFT4()
     if(SpecOp::WW_DIGI==m_specOp) t0="WW Digi";
     if(SpecOp::ARRL_DIGI==m_specOp) t0="ARRL Digi";
     if(SpecOp::Q65_PILEUP==m_specOp) t0="Q65 Pileup";
+    if(SpecOp::SWISS_FT8_CONTEST==m_specOp) t0="Swiss FT8";
     if(t0=="") {
       ui->labDXped->setVisible(false);
     } else {
