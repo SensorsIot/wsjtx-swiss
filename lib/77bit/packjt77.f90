@@ -204,8 +204,7 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
 ! the value of nrx is used to decide when mycall13 or dxcall13 should
 ! be used in place of a callsign from the hashtable
 !
-  parameter (NSEC=86)      !Number of ARRL Sections
-  parameter (NCANTON=26)   !Number of Swiss Cantons
+  parameter (NSEC=110)     !Number of ARRL Sections (86) + Swiss Cantons (24, excl. AR and NE)
   parameter (NUSCAN=171)   !Number of States and Provinces
   parameter (MAXGRID4=32400)
   integer*8 n58
@@ -220,7 +219,6 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
   character*6 cexch,grid6
   character*4 grid4,cserial
   character*3 csec(NSEC)
-  character*2 ccanton(NCANTON)
   character*38 c
   character*36 a2
   integer hashmy10,hashmy12,hashmy22,hashdx10,hashdx12,hashdx22
@@ -229,6 +227,7 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
 
   data a2/'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'/,nzzz/46656/
   data c/' 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ/'/
+! Swiss cantons (24): AR (Appenzell) and NE (Neuchatel) use ARRL codes (Arkansas/Nebraska)
   data csec/                                                         &
        "AB ","AK ","AL ","AR ","AZ ","BC ","CO ","CT ","DE ","EB ",  &       
        "EMA","ENY","EPA","EWA","GA ","GH ","IA ","ID ","IL ","IN ",  &
@@ -238,11 +237,10 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
        "ONS","OR ","ORG","PAC","PR ","QC ","RI ","SB ","SC ","SCV",  &       
        "SD ","SDG","SF ","SFL","SJV","SK ","SNJ","STX","SV ","TN ",  &       
        "UT ","VA ","VI ","VT ","WCF","WI ","WMA","WNY","WPA","WTX",  &       
-       "WV ","WWA","WY ","DX ","PE ","NB "/
-  data ccanton/                                                      &
-       "AG","AI","AR","BE","BL","BS","FR","GE","GL","GR",            &
-       "JU","LU","NE","NW","OW","SG","SH","SO",                      &
-       "SZ","TG","TI","UR","VD","VS","ZG","ZH"/
+       "WV ","WWA","WY ","DX ","PE ","NB ",                          &
+       "AG ","AI ","BE ","BL ","BS ","FR ","GE ","GL ","GR ","JU ",  &
+       "LU ","NW ","OW ","SG ","SH ","SO ","SZ ","TG ","TI ","UR ",  &
+       "VD ","VS ","ZG ","ZH "/
   data cmult/                                                        &
        "AL ","AK ","AZ ","AR ","CA ","CO ","CT ","DE ","FL ","GA ",  &
        "HI ","ID ","IL ","IN ","IA ","KS ","KY ","LA ","ME ","MD ",  &
@@ -339,10 +337,9 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
   else if(i3.eq.0 .and. (n3.eq.3 .or. n3.eq.4)) then
 ! 0.3   WA9XYZ KA1ABC R 16A EMA            28 28 1 4 3 7    71   ARRL Field Day
 ! 0.4   WA9XYZ KA1ABC R 32A EMA            28 28 1 4 3 7    71   ARRL Field Day
-! 0.3   HB9AAA HB9BBB R 1A ZH              28 28 1 4 3 7    71   Swiss FT8 Contest
      read(c77,1030) n28a,n28b,ir,intx,nclass,isec
 1030 format(2b28,b1,b4,b3,b7)
-     if(isec.gt.(NSEC+NCANTON) .or. isec.lt.1) then
+     if(isec.gt.NSEC .or. isec.lt.1) then
          unpk77_success=.false.
          isec=1
      endif
@@ -355,25 +352,14 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
      write(cntx(1:2),1032) ntx
 1032 format(i2)
      cntx(3:3)=char(ichar('A')+nclass)
-! Check if this is a Swiss canton (isec > NSEC)
-     if(isec.gt.NSEC) then
-! Swiss FT8 Contest: display canton instead of section
-        icanton=isec-NSEC
-        if(ir.eq.0) msg=trim(call_1)//' '//trim(call_2)//' '//            &
-             cntx//' '//ccanton(icanton)
-        if(ir.eq.1) msg=trim(call_1)//' '//trim(call_2)//' R '//          &
-             cntx//' '//ccanton(icanton)
-     else
-! ARRL Field Day: display section
-        if(ir.eq.0 .and. ntx.lt.10) msg=trim(call_1)//' '//trim(call_2)// &
-             cntx//' '//csec(isec)
-        if(ir.eq.1 .and. ntx.lt.10) msg=trim(call_1)//' '//trim(call_2)// &
-             ' R'//cntx//' '//csec(isec)
-        if(ir.eq.0 .and. ntx.ge.10) msg=trim(call_1)//' '//trim(call_2)// &
-             ' '//cntx//' '//csec(isec)
-        if(ir.eq.1 .and. ntx.ge.10) msg=trim(call_1)//' '//trim(call_2)// &
-             ' R '//cntx//' '//csec(isec)
-     endif
+     if(ir.eq.0 .and. ntx.lt.10) msg=trim(call_1)//' '//trim(call_2)//     &
+          cntx//' '//csec(isec)
+     if(ir.eq.1 .and. ntx.lt.10) msg=trim(call_1)//' '//trim(call_2)//     &
+          ' R'//cntx//' '//csec(isec)
+     if(ir.eq.0 .and. ntx.ge.10) msg=trim(call_1)//' '//trim(call_2)//     &
+          ' '//cntx//' '//csec(isec)
+     if(ir.eq.1 .and. ntx.ge.10) msg=trim(call_1)//' '//trim(call_2)//     &
+          ' R '//cntx//' '//csec(isec)
 
   else if(i3.eq.0 .and. n3.eq.5) then
 ! 0.5   0123456789abcdef01                 71               71   Telemetry (18 hex)
@@ -471,10 +457,10 @@ subroutine unpack77(c77,nrx,msg,unpk77_success)
         if(.not.unpkg4_success) unpk77_success=.false.
         msg=trim(call_1)//' '//grid6
      endif
-
+  
   else if(i3.eq.0 .and. n3.gt.6) then
      unpk77_success=.false.
-
+   
   else if(i3.eq.1 .or. i3.eq.2) then
 ! Type 1 (standard message) or Type 2 ("/P" form for EU VHF contest)
      read(c77,1000) n28a,ipa,n28b,ipb,ir,igrid4,i3
@@ -938,70 +924,55 @@ end subroutine pack77_01
 subroutine pack77_03(nwords,w,i3,n3,c77)
 
 ! Check 0.3 and 0.4 (ARRL Field Day exchange)
-! Example message:  WA9XYZ KA1ABC R 16A EMA       28 28 1 4 3 7    71
-! Also handles Swiss FT8 Contest:
-! Example message:  HB9AAA HB9BBB R 1A ZH         28 28 1 4 3 7    71
+! Example message:  WA9XYZ KA1ABC R 16A EMA       28 28 1 4 3 7    71  
 
-  parameter (NSEC=86)      !Number of ARRL Sections
-  parameter (NCANTON=26)   !Number of Swiss Cantons
+  parameter (NSEC=110)     !Number of ARRL Sections (86) + Swiss Cantons (24, excl. AR and NE)
   character*13 w(19)
   character*77 c77
   character*6 bcall_1,bcall_2
   character*3 csec(NSEC)
-  character*2 ccanton(NCANTON)
   logical ok1,ok2
+! Swiss cantons (24): AR (Appenzell) and NE (Neuchatel) use ARRL codes (Arkansas/Nebraska)
   data csec/                                                         &
-       "AB ","AK ","AL ","AR ","AZ ","BC ","CO ","CT ","DE ","EB ",  &
+       "AB ","AK ","AL ","AR ","AZ ","BC ","CO ","CT ","DE ","EB ",  &       
        "EMA","ENY","EPA","EWA","GA ","GH ","IA ","ID ","IL ","IN ",  &
        "KS ","KY ","LA ","LAX","NS ","MB ","MDC","ME ","MI ","MN ",  &
-       "MO ","MS ","MT ","NC ","ND ","NE ","NFL","NH ","NL ","NLI",  &
+       "MO ","MS ","MT ","NC ","ND ","NE ","NFL","NH ","NL ","NLI",  &       
        "NM ","NNJ","NNY","TER","NTX","NV ","OH ","OK ","ONE","ONN",  &
-       "ONS","OR ","ORG","PAC","PR ","QC ","RI ","SB ","SC ","SCV",  &
-       "SD ","SDG","SF ","SFL","SJV","SK ","SNJ","STX","SV ","TN ",  &
-       "UT ","VA ","VI ","VT ","WCF","WI ","WMA","WNY","WPA","WTX",  &
-       "WV ","WWA","WY ","DX ","PE ","NB "/
-  data ccanton/                                                      &
-       "AG","AI","AR","BE","BL","BS","FR","GE","GL","GR",            &
-       "JU","LU","NE","NW","OW","SG","SH","SO",                      &
-       "SZ","TG","TI","UR","VD","VS","ZG","ZH"/
+       "ONS","OR ","ORG","PAC","PR ","QC ","RI ","SB ","SC ","SCV",  &       
+       "SD ","SDG","SF ","SFL","SJV","SK ","SNJ","STX","SV ","TN ",  &       
+       "UT ","VA ","VI ","VT ","WCF","WI ","WMA","WNY","WPA","WTX",  &       
+       "WV ","WWA","WY ","DX ","PE ","NB ",                          &
+       "AG ","AI ","BE ","BL ","BS ","FR ","GE ","GL ","GR ","JU ",  &
+       "LU ","NW ","OW ","SG ","SH ","SO ","SZ ","TG ","TI ","UR ",  &
+       "VD ","VS ","ZG ","ZH "/
 
-  if(nwords.lt.4 .or. nwords.gt.5) return
+  if(nwords.lt.4 .or. nwords.gt.5) return  
   call chkcall(w(1),bcall_1,ok1)
   call chkcall(w(2),bcall_2,ok2)
   if(.not.ok1 .or. .not.ok2) return
   isec=-1
-! First try ARRL sections
   do i=1,NSEC
      if(csec(i).eq.w(nwords)(1:3)) then
         isec=i
         exit
      endif
   enddo
-! If not found, try Swiss cantons (stored as 87-112)
-  if(isec.eq.-1) then
-     do i=1,NCANTON
-        if(ccanton(i).eq.w(nwords)(1:2)) then
-           isec=NSEC+i
-           exit
-        endif
-     enddo
-  endif
   if(isec.eq.-1) return
   if(nwords.eq.5 .and. trim(w(3)).ne.'R') return
-
+  
   ntx=-1
   j=len(trim(w(nwords-1)))-1
   read(w(nwords-1)(1:j),*,err=1,end=1) ntx          !Number of transmitters
 1 if(ntx.lt.1 .or. ntx.gt.32) return
   nclass=ichar(w(nwords-1)(j+1:j+1))-ichar('A')
-
+  
   m=len(trim(w(nwords)))                            !Length of section abbreviation
   if(m.lt.2 .or. m.gt.3) return
 
 ! 0.3   WA9XYZ KA1ABC R 16A EMA            28 28 1 4 3 7    71   ARRL Field Day
 ! 0.4   WA9XYZ KA1ABC R 32A EMA            28 28 1 4 3 7    71   ARRL Field Day
-! 0.3   HB9AAA HB9BBB R 1A ZH              28 28 1 4 3 7    71   Swiss FT8 Contest
-
+  
   i3=0
   n3=3                                 !Type 0.3 ARRL Field Day
   intx=ntx-1
@@ -1145,7 +1116,7 @@ subroutine pack77_06(nwords,w,i3,n3,c77,i3_hint,n3_hint)
 1030 format(b22.22,b25.25,b3.3,b21.21,2b3.3)
   endif
 
-900 return
+900 return  
 end subroutine pack77_06
 
 

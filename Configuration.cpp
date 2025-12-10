@@ -754,7 +754,6 @@ private:
   bool Individual_Contest_Name_;
   bool bSpecialOp_;
   int  SelectedActivity_;
-  QString swiss_my_canton_;
   bool x2ToneSpacing_;
   bool x4ToneSpacing_;
   bool use_dynamic_grid_;
@@ -1056,10 +1055,6 @@ auto Configuration::special_op_id () const -> SpecialOperatingActivity
 {
   return m_->bSpecialOp_ ? static_cast<SpecialOperatingActivity> (m_->SelectedActivity_) : SpecialOperatingActivity::NONE;
 }
-QString Configuration::swiss_my_canton () const
-{
-  return m_->swiss_my_canton_;
-}
 
 void Configuration::set_location (QString const& grid_descriptor)
 {
@@ -1353,7 +1348,6 @@ Configuration::impl::impl (Configuration * self, QNetworkAccessManager * network
   ui_->special_op_activity_button_group->setId (ui_->rbFox, static_cast<int> (SpecialOperatingActivity::FOX));
   ui_->special_op_activity_button_group->setId (ui_->rbHound, static_cast<int> (SpecialOperatingActivity::HOUND));
   ui_->special_op_activity_button_group->setId (ui_->rbQ65pileup, static_cast<int> (SpecialOperatingActivity::Q65_PILEUP));
-  ui_->special_op_activity_button_group->setId (ui_->rbSwiss_FT8_Contest, static_cast<int> (SpecialOperatingActivity::SWISS_FT8_CONTEST));
 
   //
   // setup PTT port combo box drop down content
@@ -1670,11 +1664,9 @@ void Configuration::impl::read_settings ()
   FD_exchange_ = settings_->value ("Field_Day_Exchange",QString {}).toString ();
   RTTY_exchange_ = settings_->value ("RTTY_Exchange",QString {}).toString ();
   Contest_Name_ = settings_->value ("Contest_Name",QString {}).toString ();
-  swiss_my_canton_ = settings_->value ("Swiss_My_Canton",QString {"BL"}).toString ();
   ui_->Field_Day_Exchange->setText(FD_exchange_);
   ui_->RTTY_Exchange->setText(RTTY_exchange_);
   ui_->Contest_Name->setText(Contest_Name_);
-  ui_->cbSwiss_My_Canton->setCurrentText(swiss_my_canton_);
   hamlib_backed_up_ = settings_->value ("HamlibBackedUp",QString {}).toString ();
 
   OTPinterval_ = settings_->value ("OTPinterval", 1).toUInt ();
@@ -1916,7 +1908,6 @@ void Configuration::impl::write_settings ()
   settings_->setValue ("Field_Day_Exchange", FD_exchange_);
   settings_->setValue ("RTTY_Exchange", RTTY_exchange_);
   settings_->setValue ("Contest_Name", Contest_Name_);
-  settings_->setValue ("Swiss_My_Canton", swiss_my_canton_);
   settings_->setValue ("Font", font_.toString ());
   settings_->setValue ("DecodedTextFont", decoded_text_font_.toString ());
   settings_->setValue ("IDint", id_interval_);
@@ -2389,7 +2380,6 @@ void Configuration::impl::accept ()
   FD_exchange_= ui_->Field_Day_Exchange->text ().toUpper ();
   RTTY_exchange_= ui_->RTTY_Exchange->text ().toUpper ();
   Contest_Name_= ui_->Contest_Name->text ().toUpper ();
-  swiss_my_canton_= ui_->cbSwiss_My_Canton->currentText ();
   spot_to_psk_reporter_ = ui_->psk_reporter_check_box->isChecked ();
   psk_reporter_tcpip_ = ui_->psk_reporter_tcpip_check_box->isChecked ();
   id_interval_ = ui_->CW_id_interval_spin_box->value ();
