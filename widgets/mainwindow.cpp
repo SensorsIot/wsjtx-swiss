@@ -6228,10 +6228,16 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
     }
 
     bool bContestOK=(m_mode=="FT4" or m_mode=="FT8" or m_mode=="Q65" or m_mode=="MSK144");
-    if(message_words.size () > 4   // enough fields for a normal message
+    // For Swiss/Field Day with non-standard calls (in angle brackets), use w[] which has brackets removed
+    bool bSwissOrFD = (SpecOp::FIELD_DAY==m_specOp or SpecOp::SWISS_FT8_CONTEST==m_specOp);
+    bool bCallsignMatchW = (nw >= 4 && (w.at(0).contains(m_baseCall) || w.at(1).contains(m_baseCall))
+                           && (w.at(0).contains(qso_partner_base_call) || w.at(1).contains(qso_partner_base_call)
+                               || m_bDoubleClicked || (m_QSOProgress==CALLING)));
+    if((message_words.size () > 4   // enough fields for a normal message
        && (message_words.at(2).contains(m_baseCall) || "DE" == message_words.at(2))
        && (message_words.at(3).contains(qso_partner_base_call) or m_bDoubleClicked
-           or bEU_VHF_w2 or (m_QSOProgress==CALLING))) {
+           or bEU_VHF_w2 or (m_QSOProgress==CALLING)))
+       || (bSwissOrFD && bFieldDay_msg && bCallsignMatchW)) {
       if(message_words.at(4).contains(grid_regexp) and SpecOp::EU_VHF!=m_specOp) {
         if((SpecOp::NA_VHF==m_specOp or SpecOp::WW_DIGI==m_specOp or
             SpecOp::ARRL_DIGI==m_specOp or SpecOp::Q65_PILEUP==m_specOp)
