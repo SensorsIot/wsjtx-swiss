@@ -4,8 +4,8 @@
 
 | Feature | Description |
 |---------|-------------|
-| Swiss FT8 Contest Mode | Exchange Swiss canton codes using FT8 protocol extension (i3=0, n3=7) |
-| 26 Canton Support | All Swiss cantons supported with 5-bit encoding |
+| Swiss FT8 Contest Mode | Exchange Swiss canton codes using ARRL Field Day message format (i3=0, n3=3) |
+| 26 Canton Support | All Swiss cantons supported via extended section codes (isec 87-112) |
 | Auto-Population of TX Messages | TX message fields automatically populated with canton code when Swiss FT8 Contest mode is active |
 | ADIF Logging | Canton exchange logged with MY_CANTON and HIS_CANTON fields |
 
@@ -23,21 +23,26 @@ WSJT-SWISS is a fork of WSJT-X designed for the Swiss FT8 Contest. It enables am
 - Default selection: BL (Basel-Landschaft)
 
 ### 1.3 FT8 Protocol Extension
-Swiss contest messages use **i3=0, n3=7** (a previously reserved slot in the FT8 protocol).
+Swiss contest messages reuse the **ARRL Field Day message format (i3=0, n3=3)** with cantons encoded as extended section codes (isec values 87-112).
 
-Message format:
+Message format examples:
 ```
-0.7   HB9BLA HB9XYZ ZH                   28 28 15              71   Swiss FT8 Contest
+HB9BLA HB9XYZ 1A ZH    (TX2: initial exchange)
+HB9XYZ HB9BLA R 1A BE  (TX3: roger + exchange)
 ```
 
 ### 1.4 Bit Structure (77 bits total)
+Uses ARRL Field Day encoding with canton mapped to section field:
+
 | Bits | Size | Content |
 |------|------|---------|
 | 0-27 | 28 bits | Callsign 1 |
 | 28-55 | 28 bits | Callsign 2 |
-| 56-60 | 5 bits | Canton code (0-25) |
-| 61-70 | 10 bits | Reserved |
-| 71-73 | 3 bits | n3 field (value: 7) |
+| 56 | 1 bit | Roger flag (ir) |
+| 57-60 | 4 bits | TX count (intx) - fixed to 0 (displays as "1") |
+| 61-63 | 3 bits | Class (nclass) - fixed to 0 (displays as "A") |
+| 64-70 | 7 bits | Section (isec) - 87-112 for cantons (canton_index + 86) |
+| 71-73 | 3 bits | n3 field (value: 3) |
 | 74-76 | 3 bits | i3 field (value: 0) |
 
 ### 1.5 QSO Message Sequence
@@ -79,19 +84,19 @@ The auto-advance from TX2 → TX3 → TX4 is handled identically to ARRL Field D
 ## 2. 26 Canton Support
 
 ### 2.1 Canton Codes
-The system supports all 26 Swiss cantons, encoded as values 0-25:
+The system supports all 26 Swiss cantons, encoded as isec values 87-112 (canton_index + 86):
 
-| Code | Canton | Code | Canton | Code | Canton |
+| isec | Canton | isec | Canton | isec | Canton |
 |------|--------|------|--------|------|--------|
-| 0 | AG (Aargau) | 9 | GR (Graubünden) | 18 | SZ (Schwyz) |
-| 1 | AI (Appenzell I.Rh.) | 10 | JU (Jura) | 19 | TG (Thurgau) |
-| 2 | AR (Appenzell A.Rh.) | 11 | LU (Luzern) | 20 | TI (Ticino) |
-| 3 | BE (Bern) | 12 | NE (Neuchâtel) | 21 | UR (Uri) |
-| 4 | BL (Basel-Landschaft) | 13 | NW (Nidwalden) | 22 | VD (Vaud) |
-| 5 | BS (Basel-Stadt) | 14 | OW (Obwalden) | 23 | VS (Valais) |
-| 6 | FR (Fribourg) | 15 | SG (St. Gallen) | 24 | ZG (Zug) |
-| 7 | GE (Genève) | 16 | SH (Schaffhausen) | 25 | ZH (Zürich) |
-| 8 | GL (Glarus) | 17 | SO (Solothurn) | | |
+| 87 | AG (Aargau) | 96 | GR (Graubünden) | 105 | SG (St. Gallen) |
+| 88 | AI (Appenzell I.Rh.) | 97 | JU (Jura) | 106 | SH (Schaffhausen) |
+| 89 | AR (Appenzell A.Rh.) | 98 | LU (Luzern) | 107 | SO (Solothurn) |
+| 90 | BE (Bern) | 99 | NE (Neuchâtel) | 108 | SZ (Schwyz) |
+| 91 | BL (Basel-Landschaft) | 100 | NW (Nidwalden) | 109 | TG (Thurgau) |
+| 92 | BS (Basel-Stadt) | 101 | OW (Obwalden) | 110 | TI (Ticino) |
+| 93 | FR (Fribourg) | 102 | UR (Uri) | 111 | VD (Vaud) |
+| 94 | GE (Genève) | 103 | VS (Valais) | 112 | ZH (Zürich) |
+| 95 | GL (Glarus) | 104 | ZG (Zug) | | |
 
 ### 2.2 Default Canton
 The default canton is **BL** (Basel-Landschaft), pre-selected for new installations.
@@ -167,20 +172,20 @@ This provides immediate visual feedback of the current transmit state.
 | `Configuration.cpp` | Canton storage, UI handlers, default value (BL) |
 | `Configuration.ui` | Swiss FT8 Contest radio button and canton dropdown in Special Operating Activity |
 | `widgets/mainwindow.cpp` | Canton substitution in `genStdMsgs()`; progress bar color change in `guiUpdate()` |
-| `lib/77bit/packjt77.f90` | `pack77_07` and `unpack77` subroutines for i3=0, n3=7 message encoding/decoding |
+| `lib/77bit/packjt77.f90` | Modified `pack77_03` and `unpack77` to support canton codes (isec 87-112) |
 | `logbook/logbook.cpp` | MY_CANTON and HIS_CANTON ADIF field generation |
 
 ### 6.2 Fortran Changes (packjt77.f90)
 
-**New subroutine `pack77_07`:**
-- Encodes Swiss contest messages (CALL1 CALL2 CANTON)
-- Validates canton code (0-25)
-- Packs into 77-bit structure with i3=0, n3=7
+**Modified subroutine `pack77_03`:**
+- Extended to accept canton codes as section (isec values 87-112)
+- Canton lookup added after ARRL section lookup fails
+- Maps canton abbreviation (e.g., "ZH") to isec value (canton_index + 86)
 
 **Modified `unpack77`:**
-- Decodes i3=0, n3=7 messages
-- Extracts canton code from 5-bit field
-- Reconstructs message string with canton abbreviation
+- Decodes isec values > 86 as canton codes
+- Maps isec 87-112 back to canton abbreviations (AG-ZH)
+- Displays canton in place of ARRL section
 
 ### 6.3 Qt UI Changes (Configuration.ui)
 
@@ -306,6 +311,8 @@ The main build workflow downloads these prebuilt Hamlib binaries from a GitHub r
 
 | Scenario | Compatibility |
 |----------|---------------|
-| WSJT-SWISS ↔ WSJT-SWISS | Full Swiss contest support |
-| WSJT-SWISS ↔ WSJT-X | Standard FT8 modes only; Swiss contest messages (i3=0, n3=7) not decoded by WSJT-X |
+| WSJT-SWISS ↔ WSJT-SWISS | Full Swiss contest support with canton exchange |
+| WSJT-SWISS ↔ WSJT-X | Canton messages (isec 87-112) decoded by WSJT-X as "1A ??" (unknown section) |
 | Standard FT8/FT4/etc. | Fully compatible with all WSJT-X versions |
+
+**Note:** Since Swiss contest uses the standard Field Day message format (i3=0, n3=3), WSJT-X can decode the messages but displays "??" for the unknown section codes (87-112).
