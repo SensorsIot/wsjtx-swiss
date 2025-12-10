@@ -42,18 +42,37 @@ Message format:
 
 ### 1.5 QSO Message Sequence
 
-A typical Swiss FT8 Contest QSO follows this sequence:
+A typical Swiss FT8 Contest QSO follows this sequence (using ARRL Field Day message structure):
 
-| Step | Station A (ZH) | Station B (BE) |
-|------|----------------|----------------|
-| 1 | `CQ ZH HB9AAA JN47` | |
-| 2 | | `HB9AAA HB9BBB -07` |
-| 3 | `HB9BBB HB9AAA -06` | |
-| 4 | | `HB9AAA HB9BBB BE` |
-| 5 | `HB9BBB HB9AAA ZH` | |
-| 6 | | `HB9AAA HB9BBB RR73` |
+| Step | HB9BLA (Bern) | HB9BKT (Zürich) | TX | m_QSOProgress |
+|------|---------------|-----------------|-----|---------------|
+| 0 | `CQ XMAS HB9BLA JN47` | | TX6 | CALLING |
+| 1 | | *Double-clicks CQ* | - | → REPORT |
+| 2 | | `HB9BLA HB9BKT 1A ZH` | TX2 | REPORT |
+| 3 | *Receives exchange* | | - | → ROGER_REPORT |
+| 4 | `HB9BKT HB9BLA R 1A BE` | | TX3 | ROGER_REPORT |
+| 5 | | *Receives R + exchange* | - | → ROGERS |
+| 6 | | `HB9BLA HB9BKT RR73` | TX4 | ROGERS |
+| 7 | *Receives RR73* | | - | → SIGNOFF |
+| 8 | `HB9BKT HB9BLA 73` | | TX5 | SIGNOFF |
 
-Steps 4 and 5 use the structured i3=0, n3=7 encoding for canton exchange.
+**Message Format:** All exchange messages (TX2, TX3) use the ARRL Field Day encoding (i3=0, n3=3) with cantons encoded in the section field (isec values 87-112).
+
+### 1.6 Auto-Advance Logic
+
+The auto-advance from TX2 → TX3 → TX4 is handled identically to ARRL Field Day mode:
+
+| Received Message | Detection | Action |
+|------------------|-----------|--------|
+| `MYCALL HISCALL 1A XX` | `bFieldDay_msg=true`, `t0=HISCALL` | Set TX3, ROGER_REPORT |
+| `MYCALL HISCALL R 1A XX` | `bFieldDay_msg=true`, `t0="R"` | Set TX4, ROGERS |
+| `MYCALL HISCALL RR73` | Standard RR73 handling | Set TX5, SIGNOFF |
+
+**bFieldDay_msg Detection Criteria:**
+- Second-to-last token ends with A-F (class letter)
+- Token size ≤ 3 characters (e.g., "1A", "16A")
+- Message has ≥ 9 tokens (including timestamp prefix)
+- Number part ≥ 1 (transmitter count)
 
 ---
 
