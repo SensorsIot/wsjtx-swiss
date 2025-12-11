@@ -5,6 +5,12 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      package_only:
+        description: 'Only create NSIS package (skip compile)'
+        required: false
+        default: 'false'
+        type: boolean
 
 jobs:
   build:
@@ -72,7 +78,24 @@ jobs:
           }
           Copy-Item -Path "C:\OmniRigIni\*.ini" -Destination $omniRigRigsPath -Force
 
+      - name: Cache build directory
+        if: ${{ !inputs.package_only }}
+        uses: actions/cache@v4
+        with:
+          path: wsjtx/build
+          key: wsjtx-build-${{ github.sha }}
+
+      - name: Restore build from cache
+        if: ${{ inputs.package_only }}
+        uses: actions/cache/restore@v4
+        with:
+          path: wsjtx/build
+          key: wsjtx-build-
+          restore-keys: |
+            wsjtx-build-
+
       - name: Configure WSJT-X
+        if: ${{ !inputs.package_only }}
         run: |
           cd wsjtx
           mkdir -p build
@@ -91,11 +114,13 @@ jobs:
                 ..
 
       - name: Build WSJT-X
+        if: ${{ !inputs.package_only }}
         run: |
           cd wsjtx/build
           cmake --build . --config Release --parallel 4
 
       - name: Install and bundle WSJT-X
+        if: ${{ !inputs.package_only }}
         run: |
           cd wsjtx/build
           # cmake install runs fixup_bundle() which copies all required DLLs
