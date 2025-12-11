@@ -110,11 +110,14 @@ jobs:
             wsjtx-build-
 
       - name: Check cache was restored
-        if: ${{ inputs.package_only && steps.cache-restore.outputs.cache-hit != 'true' }}
-        run: |
-          echo "ERROR: No build cache found. Run a full build first."
-          exit 1
+        if: ${{ inputs.package_only }}
         shell: bash
+        run: |
+          if [ ! -d "wsjtx/build" ]; then
+            echo "ERROR: No build cache found. Run a full build first."
+            exit 1
+          fi
+          echo "Build cache restored successfully"
 
       - name: Configure WSJT-X
         if: ${{ !inputs.package_only }}
