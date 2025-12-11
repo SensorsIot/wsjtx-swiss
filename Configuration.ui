@@ -2913,13 +2913,13 @@ Right click for insert and delete options.</string>
             <item>
              <widget class="QRadioButton" name="rbField_Day">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Exchange: number of transmitters, Class, and ARRL/RAC section or Swiss canton.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swiss XMAS exchange: 1A + canton code (e.g. 1A ZH).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="accessibleName">
-               <string>A R R L Field Day or Swiss XMAS</string>
+               <string>Swiss XMAS</string>
               </property>
               <property name="text">
-               <string>ARRL Field Day or Swiss XMAS</string>
+               <string>Swiss XMAS</string>
               </property>
               <attribute name="buttonGroup">
                <string notr="true">special_op_activity_button_group</string>
@@ -2963,7 +2963,7 @@ Right click for insert and delete options.</string>
                  </size>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Exchange: number of transmitters, Class, and ARRL/RAC section or Swiss canton.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swiss XMAS exchange: 1A + canton code (e.g. 1A ZH).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
                  <string>6A SNJ</string>
