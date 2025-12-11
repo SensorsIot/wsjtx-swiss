@@ -117,11 +117,18 @@ MyGrid=JN47
           cd wsjtx/build
           cpack -G NSIS || (cat _CPack_Packages/win64/NSIS/NSISOutput.log && exit 1)
 
+      - name: Create ZIP archive
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem -Path "wsjtx/build/wsjtx-*.exe" | Select-Object -First 1
+          $zipName = "wsjtx-swiss-" + $installer.BaseName.Replace("wsjtx-", "") + ".zip"
+          Compress-Archive -Path $installer.FullName -DestinationPath "wsjtx/build/$zipName"
+
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
           name: wsjtx-swiss-nsis-test
-          path: wsjtx/build/wsjtx-*.exe
+          path: wsjtx/build/wsjtx-swiss-*.zip
           compression-level: 0
           retention-days: 7
 
