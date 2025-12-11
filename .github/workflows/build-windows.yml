@@ -49,10 +49,28 @@ jobs:
             mingw-w64-x86_64-portaudio
             mingw-w64-x86_64-nsis
 
-      - name: Download Hamlib
+      - name: Download Hamlib and OmniRig
+        shell: pwsh
         run: |
-          curl -L -o /c/hamlib.zip "https://github.com/SensorsIot/hamlib-prebuilds/releases/download/hamlib-4.6.5/hamlib-mingw64-4.6.5.zip"
-          unzip -o /c/hamlib.zip -d /c/hamlib-prefix
+          # Download files sequentially (parallel jobs unreliable in CI)
+          curl -L -o C:\hamlib.zip "https://github.com/SensorsIot/hamlib-prebuilds/releases/download/hamlib-4.6.5/hamlib-mingw64-4.6.5.zip"
+          Invoke-WebRequest -Uri "https://www.dxatlas.com/OmniRig/Files/OmniRig.zip" -OutFile "C:\OmniRig.zip"
+          Invoke-WebRequest -Uri "http://dxatlas.com/OmniRig/Files/RigIni.zip" -OutFile "C:\RigIni.zip"
+
+          # Extract Hamlib
+          Expand-Archive -Path "C:\hamlib.zip" -DestinationPath "C:\hamlib-prefix"
+
+          # Install OmniRig
+          Expand-Archive -Path "C:\OmniRig.zip" -DestinationPath "C:\OmniRig"
+          Start-Process -FilePath "C:\OmniRig\OmniRigSetup.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART" -Wait
+
+          # Install OmniRig INI files
+          Expand-Archive -Path "C:\RigIni.zip" -DestinationPath "C:\OmniRigIni"
+          $omniRigRigsPath = "C:\Program Files (x86)\Afreet\OmniRig\Rigs"
+          if (-not (Test-Path $omniRigRigsPath)) {
+              New-Item -Path $omniRigRigsPath -ItemType Directory -Force
+          }
+          Copy-Item -Path "C:\OmniRigIni\*.ini" -Destination $omniRigRigsPath -Force
 
       - name: Configure WSJT-X
         run: |
@@ -83,28 +101,15 @@ jobs:
           # cmake install runs fixup_bundle() which copies all required DLLs
           cmake --build . --target install --config Release
 
-      - name: Save build cache
-        uses: actions/cache/save@v4
-        with:
-          path: wsjtx/build
-          key: wsjtx-build-${{ github.run_id }}
-
       - name: Create NSIS installer
         run: |
           cd wsjtx/build
-          cpack -G NSIS || (cat _CPack_Packages/win64/NSIS/NSISOutput.log && exit 1)
-
-      - name: Create ZIP archive
-        shell: pwsh
-        run: |
-          $installer = Get-ChildItem -Path "wsjtx/build/wsjtx-*.exe" | Select-Object -First 1
-          $zipName = "wsjtx-swiss-" + $installer.BaseName.Replace("wsjtx-", "") + ".zip"
-          Compress-Archive -Path $installer.FullName -DestinationPath "wsjtx/build/$zipName"
+          cpack -G NSIS
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
           name: wsjtx-swiss-installer
-          path: wsjtx/build/wsjtx-swiss-*.zip
+          path: wsjtx/build/wsjtx-*.exe
           compression-level: 0
           retention-days: 30
