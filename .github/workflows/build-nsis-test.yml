@@ -1,8 +1,8 @@
 name: Build NSIS Test (Settings Import)
 
+# Manual trigger for testing NSIS changes
 on:
   workflow_dispatch:
-    # Manual trigger for testing NSIS changes
 
 jobs:
   build:
