@@ -55,6 +55,7 @@ jobs:
             mingw-w64-x86_64-boost
             mingw-w64-x86_64-portaudio
             mingw-w64-x86_64-nsis
+            mingw-w64-x86_64-nsis-nsisunz
 
       - name: Setup MSYS2 (NSIS only)
         if: ${{ inputs.package_only }}
@@ -63,7 +64,9 @@ jobs:
           msystem: MINGW64
           update: false
           cache: true
-          install: mingw-w64-x86_64-nsis
+          install: >-
+            mingw-w64-x86_64-nsis
+            mingw-w64-x86_64-nsis-nsisunz
 
       - name: Download Hamlib and OmniRig
         if: ${{ !inputs.package_only }}
