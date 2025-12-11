@@ -50,10 +50,9 @@ jobs:
             mingw-w64-x86_64-nsis
 
       - name: Download Hamlib
-        shell: pwsh
         run: |
-          curl -L -o C:\hamlib.zip "https://github.com/SensorsIot/hamlib-prebuilds/releases/download/hamlib-4.6.5/hamlib-mingw64-4.6.5.zip"
-          Expand-Archive -Path "C:\hamlib.zip" -DestinationPath "C:\hamlib-prefix"
+          curl -L -o /c/hamlib.zip "https://github.com/SensorsIot/hamlib-prebuilds/releases/download/hamlib-4.6.5/hamlib-mingw64-4.6.5.zip"
+          unzip -o /c/hamlib.zip -d /c/hamlib-prefix
 
       - name: Configure WSJT-X
         run: |
