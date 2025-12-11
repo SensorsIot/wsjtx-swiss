@@ -87,12 +87,20 @@ jobs:
 
       - name: Restore build from cache
         if: ${{ inputs.package_only }}
+        id: cache-restore
         uses: actions/cache/restore@v4
         with:
           path: wsjtx/build
           key: wsjtx-build-
           restore-keys: |
             wsjtx-build-
+
+      - name: Check cache was restored
+        if: ${{ inputs.package_only && steps.cache-restore.outputs.cache-hit != 'true' }}
+        run: |
+          echo "ERROR: No build cache found. Run a full build first."
+          exit 1
+        shell: bash
 
       - name: Configure WSJT-X
         if: ${{ !inputs.package_only }}
