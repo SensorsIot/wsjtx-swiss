@@ -48,6 +48,16 @@ if (CPACK_GENERATOR MATCHES "NSIS")
     Delete \\\"$INSTDIR\\\\bin\\\\libhamlib-4_old.dll\\\"
   ")
 
+  # Import settings from WSJT-X if no WSJT-SWISS config exists
+  # Logic: Only copy if WSJT-SWISS.ini does NOT exist and WSJT-X.ini DOES exist
+  set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+    IfFileExists $LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-SWISS.ini skip_import
+      IfFileExists C:\\\\wsjtx\\\\WSJT-X.ini 0 skip_import
+        CreateDirectory $LOCALAPPDATA\\\\WSJT-SWISS
+        CopyFiles /SILENT C:\\\\wsjtx\\\\WSJT-X.ini $LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-SWISS.ini
+    skip_import:
+  ")
+
   # Setup the installer and uninstall VersionInfo resource
   set (CPACK_NSIS_EXTRA_DEFINES
     "VIProductVersion @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.@PROJECT_VERSION_TWEAK@
