@@ -48,19 +48,17 @@ if (CPACK_GENERATOR MATCHES "NSIS")
     Delete \\\"$INSTDIR\\\\bin\\\\libhamlib-4_old.dll\\\"
   ")
 
-  # Extra install commands to import WSJT-X settings if checkbox was checked
+  # Extra install commands to import settings if path is provided
   set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-    StrCmp $IMPORT_WSJTX_SETTINGS \\\"1\\\" 0 skip_import
+    StrCmp \\\"$IMPORT_PATH\\\" \\\"\\\" skip_import
       IfFileExists \\\"$IMPORT_PATH\\\" 0 skip_import
         CreateDirectory \\\"$LOCALAPPDATA\\\\WSJT-SWISS\\\"
         CopyFiles /SILENT \\\"$IMPORT_PATH\\\" \\\"$LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-SWISS.ini\\\"
     skip_import:
   ")
 
-  # Variable for import checkbox and version info
-  set (CPACK_NSIS_EXTRA_DEFINES "Var IMPORT_WSJTX_SETTINGS
-Var CB_IMPORT_SETTINGS
-Var IMPORT_PATH
+  # Variable for import path
+  set (CPACK_NSIS_EXTRA_DEFINES "Var IMPORT_PATH
 Var TXT_IMPORT_PATH
 VIProductVersion @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.@PROJECT_VERSION_TWEAK@
 VIFileVersion @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@.@PROJECT_VERSION_TWEAK@
@@ -72,38 +70,27 @@ VIAddVersionKey /LANG=0 \\\"LegalCopyright\\\" \\\"@PROJECT_COPYRIGHT@\\\"
 VIAddVersionKey /LANG=0 \\\"FileDescription\\\" \\\"@PROJECT_NAME@ Installer\\\"
 VIAddVersionKey /LANG=0 \\\"FileVersion\\\" \\\"v@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@@BUILD_TYPE_REVISION@\\\"")
 
-  # Custom install options page - checkbox to import WSJT-X settings with editable path
+  # Custom install options page - import WSJT-X settings with editable path
   set (CPACK_NSIS_EXTRA_INSTALL_OPTIONS "
     \\\${NSD_CreateGroupBox} 0u 70u 100% 90u \\\"Import Settings from WSJT-X\\\"
     Pop \\$0
-    \\\${NSD_CreateLabel} 10u 84u 280u 20u \\\"Import your WSJT-X settings (callsign, grid, audio, rig).\\\"
+    \\\${NSD_CreateLabel} 10u 84u 280u 30u \\\"Enter path to WSJT-X.ini to import settings (callsign, grid, audio, rig). Leave empty to skip import.\\\"
     Pop \\$0
-    \\\${NSD_CreateCheckBox} 10u 106u 280u 14u \\\"Import settings from file:\\\"
-    Pop \\$CB_IMPORT_SETTINGS
-    \\\${NSD_CreateText} 10u 124u 275u 12u \\\"\\\"
+    \\\${NSD_CreateText} 10u 118u 275u 12u \\\"\\\"
     Pop \\$TXT_IMPORT_PATH
-    StrCpy \\$IMPORT_PATH \\\"\\$LOCALAPPDATA\\\\WSJT-X\\\\WSJT-X.ini\\\"
     IfFileExists \\\"\\$LOCALAPPDATA\\\\WSJT-X\\\\WSJT-X.ini\\\" 0 no_wsjtx_ini
       \\\${NSD_SetText} \\$TXT_IMPORT_PATH \\\"\\$LOCALAPPDATA\\\\WSJT-X\\\\WSJT-X.ini\\\"
-      \\\${NSD_SetState} \\$CB_IMPORT_SETTINGS \\\${BST_CHECKED}
-      StrCpy \\$IMPORT_WSJTX_SETTINGS \\\"1\\\"
       Goto done_wsjtx_check
     no_wsjtx_ini:
       \\\${NSD_SetText} \\$TXT_IMPORT_PATH \\\"\\\"
-      StrCpy \\$IMPORT_WSJTX_SETTINGS \\\"0\\\"
-      \\\${NSD_CreateLabel} 10u 140u 275u 10u \\\"(No WSJT-X configuration found - enter path manually)\\\"
+      \\\${NSD_CreateLabel} 10u 134u 275u 10u \\\"(No WSJT-X configuration found)\\\"
       Pop \\$0
     done_wsjtx_check:
   ")
 
-  # Read checkbox state and path when leaving install options page
+  # Read path when leaving install options page
   set (CPACK_NSIS_EXTRA_INSTALL_OPTIONS_READ "
-    \\\${NSD_GetState} \\$CB_IMPORT_SETTINGS \\$0
-    StrCmp \\$0 \\\${BST_CHECKED} 0 +3
-      StrCpy \\$IMPORT_WSJTX_SETTINGS \\\"1\\\"
-      \\\${NSD_GetText} \\$TXT_IMPORT_PATH \\$IMPORT_PATH
-    StrCmp \\$0 \\\${BST_UNCHECKED} 0 +2
-      StrCpy \\$IMPORT_WSJTX_SETTINGS \\\"0\\\"
+    \\\${NSD_GetText} \\$TXT_IMPORT_PATH \\$IMPORT_PATH
   ")
 endif ()
 
