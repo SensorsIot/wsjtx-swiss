@@ -50,10 +50,10 @@ if (CPACK_GENERATOR MATCHES "NSIS")
 
   # Extra install commands to import settings if path is provided
   set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-    StrCmp \\\"$IMPORT_PATH\\\" \\\"\\\" skip_import
-      IfFileExists \\\"$IMPORT_PATH\\\" 0 skip_import
-        CreateDirectory \\\"$LOCALAPPDATA\\\\WSJT-SWISS\\\"
-        CopyFiles /SILENT \\\"$IMPORT_PATH\\\" \\\"$LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-SWISS.ini\\\"
+    StrCmp $IMPORT_PATH \\\"\\\" skip_import
+      IfFileExists $IMPORT_PATH 0 skip_import
+        CreateDirectory $LOCALAPPDATA\\\\WSJT-SWISS
+        CopyFiles /SILENT $IMPORT_PATH $LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-SWISS.ini
     skip_import:
   ")
 
