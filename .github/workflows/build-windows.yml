@@ -57,7 +57,7 @@ jobs:
             mingw-w64-x86_64-nsis
             mingw-w64-x86_64-nsis-nsisunz
 
-      - name: Setup MSYS2 (NSIS only)
+      - name: Setup MSYS2 (package-only)
         if: ${{ inputs.package_only }}
         uses: msys2/setup-msys2@v2
         with:
@@ -65,9 +65,10 @@ jobs:
           update: false
           cache: true
           install: >-
+            make
             mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-nsis
-            mingw-w64-x86_64-nsis-nsisunz
 
       - name: Download Hamlib and OmniRig
         if: ${{ !inputs.package_only }}
@@ -154,7 +155,7 @@ jobs:
       - name: Create NSIS installer
         run: |
           cd wsjtx/build
-          cpack -G NSIS || (cat _CPack_Packages/win64/NSIS/NSISOutput.log && exit 1)
+          cpack -G NSIS || (cat _CPack_Packages/win64/NSIS/NSISOutput.log 2>/dev/null; cat _CPack_Packages/win64/NSIS/PreinstallOutput.log 2>/dev/null; exit 1)
 
       - name: Create ZIP archive
         shell: pwsh
