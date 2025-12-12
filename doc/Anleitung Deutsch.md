@@ -139,7 +139,7 @@ Die TX-Nachrichten enthalten nun automatisch deinen Kantonscode, und du rufst CQ
 | 5 | Station A sendet Kantonscode |
 | 6 | Station B bestätigt mit RR73 |
 
-![Operation Screenshot](doc/images/operation-screenshot.png)
+![Operation Screenshot](images/operation-screenshot.png)
 
 ### Logging
 
