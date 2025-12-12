@@ -51,10 +51,10 @@ if (CPACK_GENERATOR MATCHES "NSIS")
   # Import settings from WSJT-X if no WSJT-SWISS config exists
   # Logic: Only copy if WSJT-SWISS.ini does NOT exist and WSJT-X.ini DOES exist
   set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-    IfFileExists $LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-X.ini skip_import
+    IfFileExists $LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-SWISS.ini skip_import
       IfFileExists $LOCALAPPDATA\\\\WSJT-X\\\\WSJT-X.ini 0 skip_import
         CreateDirectory $LOCALAPPDATA\\\\WSJT-SWISS
-        CopyFiles /SILENT $LOCALAPPDATA\\\\WSJT-X\\\\WSJT-X.ini $LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-X.ini
+        CopyFiles /SILENT $LOCALAPPDATA\\\\WSJT-X\\\\WSJT-X.ini $LOCALAPPDATA\\\\WSJT-SWISS\\\\WSJT-SWISS.ini
     skip_import:
   ")
 
