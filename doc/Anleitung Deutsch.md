@@ -152,6 +152,10 @@ Wie üblich bei WSJT-X kann man ein Cabrillo Log erzeugen und auf  https://conte
 
 ![Cabrillo-Screenshot](images/Cabrillo-Screenshot.png)
 
+Vor dem Upload müssen die Felder nach dem folgenden Beispiel ausgefüllt werden:
+
+![Cabrillo2-screenshot](D:\Github\wsjtx-swiss\doc\Cabrillo2-screenshot.png)
+
 ---
 
 ## 7. Kompatibilität
