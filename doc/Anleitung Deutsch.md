@@ -160,7 +160,7 @@ Vor dem Upload müssen die Felder nach dem folgenden Beispiel ausgefüllt werden
 
 Der Score wird dann von der USKA berechnet. Deshalb kann er auch mit 0 ausgefüllt werden. 
 
-Beim Upload Christmas Contest Digital 2 2025 auswählen und folgende Kategorie eintragen:
+Beim Upload "Christmas Contest Digital 2 2025" auswählen und folgende Kategorie eintragen:
 
 ![Cabrillo3.screenshot](images/Cabrillo3.screenshot.png)
 
