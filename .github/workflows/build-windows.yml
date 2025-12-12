@@ -1,21 +1,10 @@
 name: Build WSJT-X Windows Installer
 
-run-name: "Build WSJT-X Windows Installer (${{ inputs.cpack_version || 'production' }})"
-
 on:
   push:
     tags:
       - "v*"
   workflow_dispatch:
-    inputs:
-      cpack_version:
-        description: 'CPack options version'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - test-settings-import
 
 jobs:
   build:
@@ -78,13 +67,6 @@ jobs:
               New-Item -Path $omniRigRigsPath -ItemType Directory -Force
           }
           Copy-Item -Path "C:\OmniRigIni\*.ini" -Destination $omniRigRigsPath -Force
-
-      - name: Select CPack options
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.cpack_version == 'test-settings-import' }}
-        shell: pwsh
-        run: |
-          Copy-Item -Path "wsjtx/CMakeCPackOptions-nsis-test.cmake.in" -Destination "wsjtx/CMakeCPackOptions.cmake.in" -Force
-          Write-Host "Using test CPack options with settings import page"
 
       - name: Configure WSJT-X
         run: |
