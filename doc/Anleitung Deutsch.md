@@ -156,6 +156,8 @@ Vor dem Upload müssen die Felder nach dem folgenden Beispiel ausgefüllt werden
 
 ![Cabrillo2-screenshot](D:\Github\wsjtx-swiss\doc\Cabrillo2-screenshot.png)
 
+Der Score wird dann von der USKA berechnet
+
 ---
 
 ## 7. Kompatibilität
