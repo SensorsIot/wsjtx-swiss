@@ -113,7 +113,7 @@ Nach der Installation kannst du WSJT-SWISS auf mehrere Arten starten:
 6. Mit **OK** speichern
 7. Im Feld **Contest name** `XMAS` eintragen
 
-![Setup Screenshot](doc/images/setup-screenshot.png)
+![Setup Screenshot](images/setup-screenshot.png)
 
 Die TX-Nachrichten enthalten nun automatisch deinen Kantonscode, und du rufst CQ als **CQ XMAS**.
 
