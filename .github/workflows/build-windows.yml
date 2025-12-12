@@ -1,6 +1,6 @@
 name: Build WSJT-X Windows Installer
 
-run-name: "Build WSJT-X Windows Installer (Advanced - simple MessageBox)"
+run-name: "Build WSJT-X Windows Installer (Advanced - folder dialog with $quote)"
 
 on:
   push:
