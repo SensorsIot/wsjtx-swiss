@@ -66,6 +66,14 @@ Your browser or antivirus software may block the download because the file is no
 1. Extract `wsjtx-swiss-installer.zip`
 2. Run `wsjtx-swiss-installer.exe`
 
+### Automatic Settings Import
+
+On first install, WSJT-SWISS automatically imports your settings from WSJT-X if:
+- No existing WSJT-SWISS configuration is found
+- A WSJT-X configuration exists at `C:\wsjtx\WSJT-X.ini`
+
+This copies your callsign, grid, audio settings, and rig configuration. Your existing WSJT-SWISS settings are never overwritten.
+
 ### Microsoft SmartScreen Warning
 
 Windows may show a SmartScreen warning because the application is not signed with a commercial code signing certificate.
