@@ -11,6 +11,8 @@
 
 WSJT-SWISS ist ein Fork von [WSJT-X](https://wsjt.sourceforge.io/wsjtx.html), der für den **Swiss XMAS FT8 Contest** entwickelt wurde. Er ermöglicht es Funkamateuren, Schweizer Kantonskürzel als Bestandteil des FT8-Digitalmode-Protokolls auszutauschen.
 
+Das Reglement für den Contest befindet sich hier: https://uska.ch/contest/schweizer-contest-kw/
+
 ### Kantonsaustausch-Protokoll
 
 WSJT-SWISS basiert auf dem ARRL-Fieldday-Protokoll, um Kantonsinformationen in der 77-Bit-Nachrichtenstruktur zu kodieren. Während eines Contest-QSOs tauschen die Stationen ihre zweibuchstabigen Kantonskürzel (z. B. **ZH** für Zürich, **BE** für Bern)  aus.
@@ -156,7 +158,7 @@ Vor dem Upload müssen die Felder nach dem folgenden Beispiel ausgefüllt werden
 
 ![Cabrillo2-screenshot](D:\Github\wsjtx-swiss\doc\Cabrillo2-screenshot.png)
 
-Der Score wird dann von der USKA berechnet
+Der Score wird dann von der USKA berechnet. Deshalb kann er auch mit 0 ausgefüllt werden.
 
 ---
 
