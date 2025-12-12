@@ -27,10 +27,12 @@ Station A (ZH)              Station B (BE)
 CQ ZH HB9AAA JN47
                             HB9AAA HB9BBB -07
 HB9BBB HB9AAA -06
-                            HB9AAA HB9BBB BE    ← Kantonsaustausch
-HB9BBB HB9AAA ZH            ← Kantonsaustausch
+                            HB9AAA HB9BBB 1A BE    ← Kantonsaustausch
+HB9BBB HB9AAA 1A ZH         ← Kantonsaustausch
                             HB9AAA HB9BBB RR73
 ```
+
+Das 1A vor dem Kanton muss nicht beachtet werden.
 
 ### ADIF-Logging
 
