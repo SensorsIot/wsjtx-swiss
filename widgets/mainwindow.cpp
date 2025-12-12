@@ -5375,11 +5375,11 @@ void MainWindow::guiUpdate()
         }
 
         if(SpecOp::FIELD_DAY==m_specOp) {
-          // Swiss contest: only log canton, not "1A" class
+          // Swiss contest: replace "1A" with "599" in log
           if(m_ntx==2 or m_ntx==3) {
             QStringList t=ui->tx2->text().split(' ', SkipEmptyParts);
             int n=t.size();
-            if (n > 3) m_xSent=t.at(n-1);
+            if (n > 3) m_xSent="599 " + t.at(n-1);
           }
         }
         if(SpecOp::RTTY==m_specOp) {
@@ -6212,8 +6212,8 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
     int m=t0.remove(t1).toInt();
     if(m < 1) bFieldDay_msg=false;
     if(bFieldDay_msg) {
-      // Swiss contest: only log canton, not "1A" class
-      m_xRcvd=t.at(n-1);
+      // Swiss contest: replace "1A" with "599" in log
+      m_xRcvd="599 " + t.at(n-1);
       t0=t.at(n-3);
     }
     if(bFieldDay_msg and SpecOp::FIELD_DAY!=m_specOp) {
