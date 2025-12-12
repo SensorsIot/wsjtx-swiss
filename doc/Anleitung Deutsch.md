@@ -148,7 +148,9 @@ Abgeschlossene QSOs werden automatisch gespeichert mit:
 - Standard-FT8-Feldern (Rufzeichen, Zeit, Frequenz, Mode, Rapporte)
 - Kantonsfeldern (`MY_CANTON`, `HIS_CANTON`)
 
-Den Log exportierst du über **File** → **Export ADIF** für die Contest-Einreichung.
+Wie üblich bei WSJT-X kann man ein Cabrillo Log erzeugen und auf  https://contestlog.uska.ch/submit hochladen
+
+![Cabrillo-Screenshot](images/Cabrillo-Screenshot.png)
 
 ---
 
