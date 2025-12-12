@@ -143,7 +143,7 @@ Completed QSOs are logged automatically with:
 - Canton fields (`MY_CANTON`, `HIS_CANTON`)
 
 As usual with WSJT-X, you can export the contest log into a Cabrillo format to upload to https://contestlog.uska.ch/submit
-![Operation Screenshot](doc/images/Cabrillo-screenshot.png)
+![Cabrillo Screenshot](doc/images/Cabrillo-Screenshot.png)
 ---
 
 ## 7. Compatibility
