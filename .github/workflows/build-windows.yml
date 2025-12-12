@@ -1,6 +1,6 @@
 name: Build WSJT-X Windows Installer
 
-run-name: "Build WSJT-X Windows Installer (Advanced - single quotes for NSIS strings)"
+run-name: "Build WSJT-X Windows Installer (Advanced - escaped quotes with $$)"
 
 on:
   push:
