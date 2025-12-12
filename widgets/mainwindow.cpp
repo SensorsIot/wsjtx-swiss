@@ -6212,12 +6212,8 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
     int m=t0.remove(t1).toInt();
     if(m < 1) bFieldDay_msg=false;
     if(bFieldDay_msg) {
-      if(SpecOp::FIELD_DAY==m_specOp) {
-        // Swiss contest: only log canton, not "1A" class
-        m_xRcvd=t.at(n-1);
-      } else {
-        m_xRcvd=t.at(n-2) + " " + t.at(n-1);
-      }
+      // Swiss contest: only log canton, not "1A" class
+      m_xRcvd=t.at(n-1);
       t0=t.at(n-3);
     }
     if(bFieldDay_msg and SpecOp::FIELD_DAY!=m_specOp) {
