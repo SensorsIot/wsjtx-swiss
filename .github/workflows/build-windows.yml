@@ -127,28 +127,25 @@ jobs:
           path: wsjtx/build/wsjtx-*.exe
           retention-days: 30
 
-      - name: Upload documentation PDFs
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation
-          path: |
-            wsjtx/doc/Anleitung Deutsch.pdf
-            wsjtx/doc/Manual English.pdf
-            wsjtx/doc/Manuel Français.pdf
-            wsjtx/doc/Manuale Italiano.pdf
-          retention-days: 30
-
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            wsjtx/build/wsjtx-*.exe
-            wsjtx/doc/Anleitung Deutsch.pdf
-            wsjtx/doc/Manual English.pdf
-            wsjtx/doc/Manuel Français.pdf
-            wsjtx/doc/Manuale Italiano.pdf
-          draft: false
-          prerelease: false
+          files: wsjtx/build/wsjtx-*.exe
+          body: |
+            ## Installation
+
+            1. Download and extract the ZIP
+            2. Run the installer
+            3. See README for setup instructions
+
+            ## Documentation
+
+            | Language | PDF |
+            |----------|-----|
+            | Deutsch | [Anleitung Deutsch.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Anleitung%20Deutsch.pdf) |
+            | English | [Manual English.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manual%20English.pdf) |
+            | Français | [Manuel Français.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manuel%20Fran%C3%A7ais.pdf) |
+            | Italiano | [Manuale Italiano.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manuale%20Italiano.pdf) |
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

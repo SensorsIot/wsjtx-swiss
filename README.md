@@ -10,12 +10,12 @@ WSJT-SWISS is a fork of [WSJT-X](https://wsjt.sourceforge.io/wsjtx.html) designe
 
 ### Documentation
 
-| Language | PDF | Markdown |
-|----------|-----|----------|
-| Deutsch | [Anleitung Deutsch.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Anleitung%20Deutsch.pdf) | [Anleitung Deutsch.md](doc/Anleitung%20Deutsch.md) |
-| English | [Manual English.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manual%20English.pdf) | [Manual English.md](doc/Manual%20English.md) |
-| Français | [Manuel Français.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manuel%20Fran%C3%A7ais.pdf) | [Manuel Français.md](doc/Manuel%20Fran%C3%A7ais.md) |
-| Italiano | [Manuale Italiano.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manuale%20Italiano.pdf) | [Manuale Italiano.md](doc/Manuale%20Italiano.md) |
+| Language | PDF |
+|----------|-----|
+| Deutsch | [Anleitung Deutsch.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Anleitung%20Deutsch.pdf) |
+| English | [Manual English.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manual%20English.pdf) |
+| Français | [Manuel Français.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manuel%20Fran%C3%A7ais.pdf) |
+| Italiano | [Manuale Italiano.pdf](https://github.com/SensorsIot/wsjtx-swiss/blob/master/doc/Manuale%20Italiano.pdf) |
 
 ### Canton Exchange Protocol
 
