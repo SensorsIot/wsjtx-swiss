@@ -126,3 +126,29 @@ jobs:
           name: wsjtx-swiss-installer
           path: wsjtx/build/wsjtx-*.exe
           retention-days: 30
+
+      - name: Upload documentation PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: |
+            wsjtx/doc/Anleitung Deutsch.pdf
+            wsjtx/doc/Manual English.pdf
+            wsjtx/doc/Manuel Français.pdf
+            wsjtx/doc/Manuale Italiano.pdf
+          retention-days: 30
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            wsjtx/build/wsjtx-*.exe
+            wsjtx/doc/Anleitung Deutsch.pdf
+            wsjtx/doc/Manual English.pdf
+            wsjtx/doc/Manuel Français.pdf
+            wsjtx/doc/Manuale Italiano.pdf
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

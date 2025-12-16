@@ -74,7 +74,7 @@ Dein Browser oder Antivirusprogramm kann den Download blockieren, weil die Datei
 Beim ersten Installieren importiert WSJT-SWISS automatisch deine Einstellungen aus WSJT-X, wenn:
 
 - keine vorhandene WSJT-SWISS-Konfiguration gefunden wird und
-- eine WSJT-X-Konfiguration unter `C:\wsjtx\WSJT-X.ini` existiert
+- eine WSJT-X-Konfiguration unter `%LOCALAPPDATA%\WSJT-X\WSJT-X.ini` existiert
 
 Dabei werden Rufzeichen, Locator, Audioeinstellungen und Rig-Konfiguration übernommen. Bestehende WSJT-SWISS-Einstellungen werden **nie überschrieben**.
 
@@ -104,7 +104,7 @@ Nach der Installation kannst du WSJT-SWISS auf mehrere Arten starten:
 
 - **Startmenü:** Eintrag **WSJT-X**
 - **Desktop:** Desktop-Verknüpfung (falls bei der Installation erstellt)
-- **Installationsordner:** `C:\WSJT\wsjtx\bin\wsjtx.exe`
+- **Installationsordner:** `C:\WSJTX-SWISS\bin\wsjtx.exe`
 
 ---
 
