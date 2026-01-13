@@ -28,6 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Hamlib (radio control)
     libhamlib-dev \
     libhamlib-utils \
+    # System libraries
+    libudev-dev \
     # Additional tools
     git \
     && apt-get clean \
